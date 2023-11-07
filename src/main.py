@@ -39,6 +39,7 @@ def display_image(epd, image_path):
         frame_image = Image.open(image_path)
         epd.display(epd.getbuffer(frame_image))
         time.sleep(2)  # 将图片显示2秒钟
+        epd.sleep()
     except IOError as e:
         print("显示图片时出错:", e)
 
@@ -94,7 +95,7 @@ def main():
             else:
                 print("获取命令失败。状态码:", response.status_code)
 
-            time.sleep(10)
+            time.sleep(20)
 
     except IOError as e:
         print("发生了IO错误:", e)
