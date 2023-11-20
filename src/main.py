@@ -69,9 +69,15 @@ def main():
         print("无法获取MAC地址。")
         sys.exit(1)
 
+    saved_version = 0  # 初始化saved_version变量
+
     try:
         while True:
-            url = f"https://api.ink.0xcafebabe.cn/device/getCommand/{mac_address}"
+            if saved_version:
+                url = f"https://api.ink.0xcafebabe.cn/device/getCommand/{mac_address}?version={saved_version}"
+            else:
+                url = f"https://api.ink.0xcafebabe.cn/device/getCommand/{mac_address}"
+
             print("正在请求URL:", url)
             response = requests.get(url)
             print("响应:", response.text)
@@ -79,6 +85,9 @@ def main():
             if response.status_code == 200:
                 json_response = response.json()
                 if json_response['code'] == 0:
+                    # 更新saved_version变量
+                    saved_version = json_response['data']['version']
+
                     if json_response['data']['type'] == 1:
                         command = json_response['data']['command']
                         print("从以下地址下载图片:", command)
@@ -91,10 +100,15 @@ def main():
                     elif json_response['data']['type'] == 0:
                         # 当type为0时，不进行任何操作
                         print("Type为0, 不执行任何操作。")
+                    elif json_response['data']['type'] == -1:
+                        # 当type为-1时，清空并退出
+                        print("Type为-1, 清空。")
+                        epd.Clear()
+
             else:
                 print("获取命令失败。状态码:", response.status_code)
 
-            time.sleep(10)
+            time.sleep(3)
 
     except IOError as e:
         print("发生了IO错误:", e)
