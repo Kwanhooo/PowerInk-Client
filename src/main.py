@@ -71,8 +71,8 @@ def main():
 
     saved_version = 0  # 初始化saved_version变量
 
-    try:
-        while True:
+    while True:
+        try:
             if saved_version:
                 url = f"https://api.ink.0xcafebabe.cn/device/getCommand/{mac_address}?version={saved_version}"
             else:
@@ -104,20 +104,22 @@ def main():
                         # 当type为-1时，清空并退出
                         print("Type为-1, 清空。")
                         epd.Clear()
-
             else:
                 print("获取命令失败。状态码:", response.status_code)
 
             time.sleep(3)
 
-    except IOError as e:
-        print("发生了IO错误:", e)
-        clear_exit(epd)
+        except requests.RequestException as e:
+            print("网络请求出错:", e)
 
-    except KeyboardInterrupt:
-        print("ctrl + c: 清空并退出")
-        clear_exit(epd)
-        sys.exit()
+        except IOError as e:
+            print("发生了IO错误:", e)
+            # clear_exit(epd)
+
+        except KeyboardInterrupt:
+            print("ctrl + c: 清空并退出")
+            clear_exit(epd)
+            sys.exit()
 
 
 if __name__ == "__main__":
